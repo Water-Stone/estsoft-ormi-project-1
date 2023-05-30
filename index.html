@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>chat</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Dokdo&display=swap"
+            rel="stylesheet"
+        />
+    </head>
+    <body>
+        <div class="mx-auto grid max-w-4xl grid-cols-12 gap-4 bg-zinc-50 p-1">
+            <div
+                class="header col-span-12 rounded-lg border border-gray-300 bg-gray-600 py-4"
+            >
+                <!-- Header content -->
+                <a href="#" class="flex items-center">
+                    <img
+                        src="/img/jeju-ico.png"
+                        class="mr-3 h-6 sm:h-9"
+                        alt="Jeju-icon"
+                    />
+                    <span
+                        class="self-center text-3xl font-['Dokdo'] whitespace-nowrap dark:text-white"
+                        >My JeJu Travel</span
+                    >
+                </a>
+            </div>
+            <div
+                class="col-span-12 rounded-lg border border-gray-500 bg-gray-200 p-0 sm:col-span-4"
+            >
+                <!-- Main Image -->
+                <img src="/img/" alt="main-jeju-1" />
+            </div>
+            <div
+                class="col-span-12 rounded-lg border border-gray-400 bg-gray-200 p-5 sm:col-span-8"
+            >
+                <!-- Main Input -->
+                <h2 class="text-2xl font-bold pb-5">여행 일정 입력</h2>
+                <form action="post">
+                    <p class="text-normal font-bold py-2">
+                        어디로 여행하시나요?
+                    </p>
+                    <input
+                        type="text"
+                        name="place"
+                        id="place"
+                        value="예) 제주특별자치도"
+                        autofocus
+                    />
+                    <p class="text-normal font-bold py-2">
+                        여행 일정을 입력해주세요.
+                    </p>
+                    <input type="text" name="days" id="days" value="예) 3일" />
+                    <p class="text-normal font-bold py-2">
+                        여행 일정에 꼭 들어갔으면 하는 여행지를 입력해주세요.
+                    </p>
+                    <input
+                        type="text"
+                        name="mustgo"
+                        id="mustgo"
+                        value="예) 성산일출봉"
+                    />
+                    <p class="text-normal font-bold py-2">차를 렌트하셨나요?</p>
+                    <input
+                        type="radio"
+                        name="rented"
+                        id="rented"
+                        value="true"
+                    />예
+                    <input
+                        type="radio"
+                        name="rented"
+                        id="rented"
+                        value="flase"
+                    />아니오
+                    <button
+                        type="submit"
+                        class="block mx-auto shadow bg-indigo-500 hover:bg-indigo-700 focus:shadow-outline focus:outline-none text-white text-xs py-3 px-10 rounded"
+                    >
+                        일정 생성!
+                    </button>
+                </form>
+            </div>
+            <div
+                class="footer col-span-12 rounded-lg border border-gray-800 bg-gray-700 p-6"
+            >
+                <!-- Footer content -->
+            </div>
+        </div>
+        <div>
+            <ul></ul>
+        </div>
+        <script>
+            const $form = document.querySelector("form");
+            const $input = document.querySelector("input");
+            const $chatList = document.querySelector("ul");
+
+            // openAI API
+            let url = `https://estsoft-openai-api.jejucodingcamp.workers.dev/`;
+
+            // 사용자의 입력
+            let question, place, days, mustgo, rented;
+
+            // 질문과 답변 저장
+            let data = [
+                {
+                    role: "system",
+                    content: "You are a travel guide assistant.",
+                },
+                {
+                    role: "assistant",
+                    content: "",
+                },
+            ];
+
+            // 화면에 뿌려줄 데이터, 질문들
+            let questionData = [];
+
+            // input에 입력된 질문 받아오는 함수
+            $input.addEventListener("input", (e) => {
+                question = e.target.value;
+            });
+
+            // 사용자의 질문을 객체를 만들어서 push
+            const sendQuestion = (question) => {
+                if (question) {
+                    data.push({
+                        role: "user",
+                        content: question,
+                    });
+                    questionData.push({
+                        role: "user",
+                        content: question,
+                    });
+                }
+            };
+
+            // 화면에 질문 그려주는 함수
+            const printQuestion = async () => {
+                if (question) {
+                    let li = document.createElement("li");
+                    li.classList.add("question");
+                    questionData.map((el) => {
+                        li.innerText = el.content;
+                    });
+                    $chatList.appendChild(li);
+                    questionData = [];
+                    question = false;
+                }
+            };
+
+            // 화면에 답변 그려주는 함수
+            const printAnswer = (answer) => {
+                let li = document.createElement("li");
+                li.classList.add("answer");
+                li.innerText = answer;
+                $chatList.appendChild(li);
+            };
+
+            // api 요청보내는 함수
+            const apiPost = async () => {
+                const result = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(data),
+                    redirect: "follow",
+                })
+                    .then((res) => res.json())
+                    .then((res) => {
+                        printAnswer(res.choices[0].message.content);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            };
+
+            // submit
+            $form.addEventListener("submit", (e) => {
+                e.preventDefault();
+                $input.value = null;
+                sendQuestion(question);
+                apiPost();
+                printQuestion();
+            });
+        </script>
+    </body>
+</html>
