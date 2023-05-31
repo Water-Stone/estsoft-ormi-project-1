@@ -14,11 +14,11 @@
         />
     </head>
     <body>
-        <div class="mx-auto grid max-w-4xl grid-cols-12 gap-4 bg-zinc-50 p-1">
+        <div class="mx-auto grid max-w-4xl grid-cols-12 gap-2 bg-zinc-50 p-1">
+            <!-- Header -->
             <div
                 class="header col-span-12 rounded-lg border border-gray-300 bg-gray-600 py-4"
             >
-                <!-- Header content -->
                 <a href="#" class="flex items-center">
                     <img
                         src="/img/jeju-ico.png"
@@ -27,169 +27,117 @@
                     />
                     <span
                         class="self-center text-3xl font-['Dokdo'] whitespace-nowrap dark:text-white"
-                        >My JeJu Travel</span
+                        >My Travel</span
                     >
                 </a>
             </div>
+            <!-- Main Image -->
             <div
-                class="col-span-12 rounded-lg border border-gray-500 bg-gray-200 p-0 sm:col-span-4"
+                class="flex items-center col-span-12 rounded-lg border border-gray-500 bg-gray-200 sm:col-span-4"
             >
-                <!-- Main Image -->
-                <img src="/img/" alt="main-jeju-1" />
+                <img src="/img/main-jeju-1.webp" alt="main-jeju-1" />
             </div>
+            <!-- Main Input -->
             <div
                 class="col-span-12 rounded-lg border border-gray-400 bg-gray-200 p-5 sm:col-span-8"
             >
-                <!-- Main Input -->
                 <h2 class="text-2xl font-bold pb-5">여행 일정 입력</h2>
                 <form action="post">
-                    <p class="text-normal font-bold py-2">
+                    <label for="place" class="block text-normal font-bold py-2">
                         어디로 여행하시나요?
-                    </p>
+                    </label>
                     <input
                         type="text"
                         name="place"
                         id="place"
-                        value="예) 제주특별자치도"
+                        placeholder="예) 제주특별자치도"
+                        class="border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
                         autofocus
                     />
-                    <p class="text-normal font-bold py-2">
+                    <label for="days" class="block text-normal font-bold py-2">
                         여행 일정을 입력해주세요.
-                    </p>
-                    <input type="text" name="days" id="days" value="예) 3일" />
-                    <p class="text-normal font-bold py-2">
+                    </label>
+                    <input
+                        type="text"
+                        name="days"
+                        id="days"
+                        placeholder="예) 3일"
+                        class="border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
+                    />
+                    <label
+                        for="mustgo"
+                        class="block text-normal font-bold py-2"
+                    >
                         여행 일정에 꼭 들어갔으면 하는 여행지를 입력해주세요.
-                    </p>
+                    </label>
                     <input
                         type="text"
                         name="mustgo"
                         id="mustgo"
-                        value="예) 성산일출봉"
+                        placeholder="예) 성산일출봉"
+                        class="border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
                     />
-                    <p class="text-normal font-bold py-2">차를 렌트하셨나요?</p>
-                    <input
-                        type="radio"
-                        name="rented"
-                        id="rented"
-                        value="true"
-                    />예
-                    <input
-                        type="radio"
-                        name="rented"
-                        id="rented"
-                        value="flase"
-                    />아니오
+                    <span class="block text-normal font-bold py-2"
+                        >차를 렌트하셨나요?</span
+                    >
+                    <label class="p-2 m-1">
+                        <input
+                            type="radio"
+                            name="rented"
+                            id="rented_true"
+                            checked="false"
+                        />
+                        예
+                    </label>
+                    <label class="p-2 m-1">
+                        <input type="radio" name="rented" id="rented_false" />
+                        아니오
+                    </label>
                     <button
                         type="submit"
-                        class="block mx-auto shadow bg-indigo-500 hover:bg-indigo-700 focus:shadow-outline focus:outline-none text-white text-xs py-3 px-10 rounded"
+                        class="block mx-auto shadow bg-indigo-500 hover:bg-indigo-600 focus:shadow-outline focus:outline-none text-white text-xs mt-4 py-3 w-full rounded"
                     >
                         일정 생성!
                     </button>
                 </form>
             </div>
-            <div
-                class="footer col-span-12 rounded-lg border border-gray-800 bg-gray-700 p-6"
-            >
-                <!-- Footer content -->
+            <!-- 일정 출력 -->
+            <div class="col-span-12 rounded-lg p-6">
+                <h2 class="text-2xl font-bold p-2">여행 일정</h2>
+                <hr class="h-px my-4 bg-gray-200 border-0 dark:bg-gray-700" />
+                <div id="result">
+                    <span
+                        class="sm:pl-2 pl-40 text-center text-sm text-gray-500"
+                        id="before_text"
+                        >여행 일정을 입력하고 '일정 생성!' 버튼을 누르면 여행
+                        일정이 자동으로 생성됩니다.</span
+                    >
+                    <div
+                        role="status"
+                        class="sm:pl-12 pl-96 hidden"
+                        id="loading"
+                    >
+                        <svg
+                            aria-hidden="true"
+                            class="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                            viewBox="0 0 100 101"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                fill="currentColor"
+                            />
+                            <path
+                                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                fill="currentFill"
+                            />
+                        </svg>
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
             </div>
         </div>
-        <div>
-            <ul></ul>
-        </div>
-        <script>
-            const $form = document.querySelector("form");
-            const $input = document.querySelector("input");
-            const $chatList = document.querySelector("ul");
-
-            // openAI API
-            let url = `https://estsoft-openai-api.jejucodingcamp.workers.dev/`;
-
-            // 사용자의 입력
-            let question, place, days, mustgo, rented;
-
-            // 질문과 답변 저장
-            let data = [
-                {
-                    role: "system",
-                    content: "You are a travel guide assistant.",
-                },
-                {
-                    role: "assistant",
-                    content: "",
-                },
-            ];
-
-            // 화면에 뿌려줄 데이터, 질문들
-            let questionData = [];
-
-            // input에 입력된 질문 받아오는 함수
-            $input.addEventListener("input", (e) => {
-                question = e.target.value;
-            });
-
-            // 사용자의 질문을 객체를 만들어서 push
-            const sendQuestion = (question) => {
-                if (question) {
-                    data.push({
-                        role: "user",
-                        content: question,
-                    });
-                    questionData.push({
-                        role: "user",
-                        content: question,
-                    });
-                }
-            };
-
-            // 화면에 질문 그려주는 함수
-            const printQuestion = async () => {
-                if (question) {
-                    let li = document.createElement("li");
-                    li.classList.add("question");
-                    questionData.map((el) => {
-                        li.innerText = el.content;
-                    });
-                    $chatList.appendChild(li);
-                    questionData = [];
-                    question = false;
-                }
-            };
-
-            // 화면에 답변 그려주는 함수
-            const printAnswer = (answer) => {
-                let li = document.createElement("li");
-                li.classList.add("answer");
-                li.innerText = answer;
-                $chatList.appendChild(li);
-            };
-
-            // api 요청보내는 함수
-            const apiPost = async () => {
-                const result = await fetch(url, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(data),
-                    redirect: "follow",
-                })
-                    .then((res) => res.json())
-                    .then((res) => {
-                        printAnswer(res.choices[0].message.content);
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
-            };
-
-            // submit
-            $form.addEventListener("submit", (e) => {
-                e.preventDefault();
-                $input.value = null;
-                sendQuestion(question);
-                apiPost();
-                printQuestion();
-            });
-        </script>
     </body>
+    <script src="/index.js"></script>
 </html>
