@@ -1,6 +1,4 @@
 /*
-!! 해결해야할 issues
-
 - 발생한 Warns:
 1. cdn.tailwindcss.com should not be used in production.
 To use Tailwind CSS in production, install it as a PostCSS plugin 
@@ -9,9 +7,7 @@ or use the Tailwind CLI: https://tailwindcss.com/docs/installation
 2. warn - No utility classes were detected in your source files.
 If this is unexpected, double-check the `content` option 
 in your Tailwind CSS configuration.
-
-- 요청 후 ChatGPT에게서 받은 answer의 JSON.stringify 이후 문자열 형태가
-큰 따옴표, 중괄호 사이에 역슬래쉬가 다 들어가있음.
+https://tailwindcss.com/docs/content-configuration
  */
 const $form = document.querySelector("form");
 const $input_place = document.querySelector("#place");
@@ -105,37 +101,41 @@ const sendSentence = (request_sentence) => {
     }
 };
 
-// 화면에 질문 그려주는 함수
-// const printQuestion = async () => {
-//     if (question) {
-//         let li = document.createElement("li");
-//         li.classList.add("question");
-//         schedule.map((el) => {
-//             li.innerText = el.content;
-//         });
-//         $schedule_print_area.appendChild(li);
-//         schedule = [];
-//         question = false;
-//     }
-// };
-
 // 화면에 답변 그려주는 함수
-const printAnswer = (answer) => {
+const printAnswer = (_json) => {
     // 날짜별로 day1, day2... 카드 만들기
-    for (const scdl of answer) {
-        let currDayCard = document.createElement("div");
-        // currDayCard.classList.add(
-        //     "block border border-gray-400 bg-gray-200 py-4 w-full rounded"
-        // );
-        // 오전, 오후, 저녁 등 세부 스케줄별로 li
-        for (const dtl of scdl) {
-            let li = document.createElement("li");
-            console.log(dtl);
-            li.innerText = dtl.key() + ": " + dtl.value();
-            currDayCard.appendChild(li);
+    for (const key_day in _json) {
+        if (Object.hasOwnProperty.call(_json, key_day)) {
+            let currDayCard = document.createElement("ul");
+            currDayCard.innerText = "■ " + key_day;
+            const detail = _json[key_day];
+            for (const key_dtl in detail) {
+                // 오전, 오후, 저녁 등 세부 스케줄별로 li
+                if (Object.hasOwnProperty.call(detail, key_dtl)) {
+                    const dtl_content = detail[key_dtl];
+                    let li = document.createElement("li");
+                    li.innerText = "- " + key_dtl + ": " + dtl_content;
+                    currDayCard.appendChild(li);
+                }
+            }
+            $schedule_print_area.appendChild(currDayCard);
         }
-        $schedule_print_area.appendChild(currDayCard);
     }
+
+    // for (const scdl of _json) {
+    //     let currDayCard = document.createElement("div");
+    //     // currDayCard.classList.add(
+    //     //     "block border border-gray-400 bg-gray-200 py-4 w-full rounded"
+    //     // );
+    //     // 오전, 오후, 저녁 등 세부 스케줄별로 li
+    //     for (const dtl of scdl) {
+    //         let li = document.createElement("li");
+    //         console.log(dtl);
+    //         li.innerText = dtl.key() + ": " + dtl.value();
+    //         currDayCard.appendChild(li);
+    //     }
+    //     $schedule_print_area.appendChild(currDayCard);
+    // }
 };
 
 // api 요청보내는 함수
@@ -154,11 +154,15 @@ const apiPost = async () => {
         .then((res) => res.json())
         .then((res) => {
             $loading_img.classList.add("hidden");
-            const jed = JSON.stringify(res.choices[0].message.content);
-            console.log(jed);
-            // printAnswer(jed);
+            const jed = JSON.stringify(
+                JSON.parse(res.choices[0].message.content)
+            );
+            // console.log(jed);
+            // console.log(JSON.parse(jed));
+            printAnswer(JSON.parse(jed));
         })
         .catch((err) => {
+            $before_text.classList.remove("hidden");
             console.log(err);
         });
 };
@@ -172,5 +176,4 @@ $form.addEventListener("submit", (e) => {
     let request_sentence_form = merge_sentence(place, days, mustgo, rented);
     sendSentence(request_sentence_form);
     apiPost();
-    // printQuestion();
 });
