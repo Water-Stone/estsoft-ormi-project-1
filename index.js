@@ -9,6 +9,8 @@ If this is unexpected, double-check the `content` option
 in your Tailwind CSS configuration.
 https://tailwindcss.com/docs/content-configuration
  */
+import data from "./data/data.js";
+
 const $form = document.querySelector("form");
 const $input_place = document.querySelector("#place");
 const $input_days = document.querySelector("#days");
@@ -23,38 +25,6 @@ let url = `https://estsoft-openai-api.jejucodingcamp.workers.dev/`;
 
 // 사용자의 입력
 let place, days, mustgo, rented;
-
-// 질문과 답변 저장
-let data = [
-    {
-        role: "system",
-        content: "assistant는 여행 전문가이다.",
-    },
-    {
-        role: "user",
-        content:
-            "제주도에서의 4일 여행 일정을 만들어줘. 일정에 꼭 들어가야하는 장소는 성산일출봉이야. 나는 자동차가 있으니 여행 중 이동 거리에 크게 제약은 없어.",
-    },
-    {
-        role: "assistant",
-        content: `day1: 오전에는 한라산 등반, 오후에는 천지연 폭포를 방문하고 저녁에는 동문시장에 가는 것을 추천합니다.
-        day2: 오전에는 일정에 꼭 들어가야했던 성산일출봉을 방문하고, 오후에는 우도 일일투어, 저녁에는 서귀포 맛집탐방을 추천합니다.
-        day3: 오전에는 가볍게 카페 투어를 먼저 하고, 오후에는 산방산성재배지를 방문하고 저녁에는 한림해수욕장에서 바베큐파티를 즐겨보세요.
-        day4: 오전에는 제주도민 손맛 박물관, 오후에는 제주프리랜드를 방문하고 여행의 마지막 저녁에는 호텔 뷔페를 만끽하세요.`,
-    },
-    {
-        role: "user",
-        content:
-            "제주도에서의 4일 여행 일정을 만들어줘. 일정에 꼭 들어가야하는 장소는 성산일출봉이야. 나는 자동차가 있으니 여행 중 이동 거리에 크게 제약은 없어. 결과는 문장은 제외하고 json으로만 해줘.",
-    },
-    {
-        role: "assistant",
-        content: `{ "day1": {"오전": "한라산 등반", "오후": "천지연 폭포", "저녁": "동문시장"},
-        "day2": {"오전": "성산일출봉","오후": "우도 일일투어","저녁": "서귀포 맛집탐방"},
-        "day3": {"오전": "카페 투어","오후": "산방산성재배지","저녁": "한림해수욕장 바베큐파티"},
-        "day4": {"오전": "제주도민 손맛 박물관","오후": "제주프리랜드","저녁": "마지막 저녁은 호텔 뷔페"}}`,
-    },
-];
 
 // input 받아오기
 $input_place.addEventListener("input", (e) => {
@@ -79,7 +49,7 @@ $input_rented.addEventListener("input", (e) => {
 });
 
 const merge_sentence = (place, days, mustgo, rented) => {
-    request_sentence =
+    const request_sentence =
         place +
         "에서의 " +
         days +
@@ -107,7 +77,7 @@ const printAnswer = (_json) => {
     for (const key_day in _json) {
         if (Object.hasOwnProperty.call(_json, key_day)) {
             let currDayCard = document.createElement("ul");
-            currDayCard.innerText = "■ " + key_day;
+            currDayCard.innerText = "■ " + key_day.toUpperCase();
             const detail = _json[key_day];
             for (const key_dtl in detail) {
                 // 오전, 오후, 저녁 등 세부 스케줄별로 li
@@ -121,21 +91,6 @@ const printAnswer = (_json) => {
             $schedule_print_area.appendChild(currDayCard);
         }
     }
-
-    // for (const scdl of _json) {
-    //     let currDayCard = document.createElement("div");
-    //     // currDayCard.classList.add(
-    //     //     "block border border-gray-400 bg-gray-200 py-4 w-full rounded"
-    //     // );
-    //     // 오전, 오후, 저녁 등 세부 스케줄별로 li
-    //     for (const dtl of scdl) {
-    //         let li = document.createElement("li");
-    //         console.log(dtl);
-    //         li.innerText = dtl.key() + ": " + dtl.value();
-    //         currDayCard.appendChild(li);
-    //     }
-    //     $schedule_print_area.appendChild(currDayCard);
-    // }
 };
 
 // api 요청보내는 함수
@@ -157,8 +112,8 @@ const apiPost = async () => {
             const jed = JSON.stringify(
                 JSON.parse(res.choices[0].message.content)
             );
-            // console.log(jed);
-            // console.log(JSON.parse(jed));
+            console.log(jed);
+            console.log(JSON.parse(jed));
             printAnswer(JSON.parse(jed));
         })
         .catch((err) => {
@@ -170,6 +125,10 @@ const apiPost = async () => {
 // submit
 $form.addEventListener("submit", (e) => {
     e.preventDefault();
+    console.log(place);
+    console.log(days);
+    console.log(mustgo);
+    console.log(rented);
     $input_place.value = null;
     $input_days.value = null;
     $input_mustgo.value = null;
