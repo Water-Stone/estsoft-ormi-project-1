@@ -15,7 +15,7 @@ const $form = document.querySelector("form");
 const $input_place = document.querySelector("#place");
 const $input_days = document.querySelector("#days");
 const $input_mustgo = document.querySelector("#mustgo");
-const $input_rented = document.getElementById("rented_true");
+const $input_rented_radios = document.querySelectorAll("input[name='rented'");
 const $before_text = document.getElementById("before_text");
 const $loading_img = document.getElementById("loading");
 const $schedule_print_area = document.querySelector("#result");
@@ -39,14 +39,28 @@ $input_mustgo.addEventListener("input", (e) => {
     mustgo = $input_mustgo.value;
 });
 
-$input_rented.addEventListener("input", (e) => {
-    if ($input_rented.checked == true) {
-        rented = "나는 자동차가 있으니 여행 중 이동 거리에 크게 제약은 없어.";
-    } else {
-        rented =
-            "나는 자동차가 없으니 여행 중 이동 거리는 가능한 짧게 계획해줘.";
-    }
+$input_rented_radios.forEach((rd) => {
+    rd.addEventListener("change", (e) => {
+        if (e.currentTarget.checked) {
+            if (JSON.parse(e.currentTarget.value)) {
+                rented =
+                    "나는 자동차가 있으니 여행 중 이동 거리에 크게 제약은 없어.";
+            } else {
+                rented =
+                    "나는 자동차가 없으니 여행 중 이동 거리는 가능한 짧게 계획해줘.";
+            }
+        }
+    });
 });
+
+// $input_rented.addEventListener("input", (e) => {
+//     if ($input_rented.checked == true) {
+//         rented = "나는 자동차가 있으니 여행 중 이동 거리에 크게 제약은 없어.";
+//     } else {
+//         rented =
+//             "나는 자동차가 없으니 여행 중 이동 거리는 가능한 짧게 계획해줘.";
+//     }
+// });
 
 const merge_sentence = (place, days, mustgo, rented) => {
     const request_sentence =
@@ -108,12 +122,13 @@ const apiPost = async () => {
     })
         .then((res) => res.json())
         .then((res) => {
+            // console.log(res);
             $loading_img.classList.add("hidden");
             const jed = JSON.stringify(
                 JSON.parse(res.choices[0].message.content)
             );
             console.log(jed);
-            console.log(JSON.parse(jed));
+            // console.log(JSON.parse(jed));
             printAnswer(JSON.parse(jed));
         })
         .catch((err) => {
@@ -125,10 +140,7 @@ const apiPost = async () => {
 // submit
 $form.addEventListener("submit", (e) => {
     e.preventDefault();
-    console.log(place);
-    console.log(days);
-    console.log(mustgo);
-    console.log(rented);
+    console.log(place, days, mustgo, rented.substr(5, 9));
     $input_place.value = null;
     $input_days.value = null;
     $input_mustgo.value = null;
