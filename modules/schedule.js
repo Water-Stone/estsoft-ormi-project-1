@@ -1,5 +1,8 @@
-export const printAnswer = (_json) => {
-    const $schedulePrintArea = document.querySelector("#result");
+const $schedulePrintArea = document.getElementById("result");
+
+const printAnswer = (_json) => {
+    console.log("printAnswer 진입");
+    console.log(_json);
     // 날짜별로 day1, day2... 카드 만들기
     for (const key_day in _json) {
         if (Object.hasOwnProperty.call(_json, key_day)) {
@@ -19,3 +22,5 @@ export const printAnswer = (_json) => {
         }
     }
 };
+
+export { printAnswer };

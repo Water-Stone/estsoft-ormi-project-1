@@ -1,12 +1,12 @@
-import { printAnswer } from "../modules/schedule.js";
-import { sendSentence, apiPost } from "./modules/api.js";
+import { printAnswer } from "./../modules/schedule.js";
+import { sendSentence, apiPost } from "./../modules/api.js";
 import {
     handlePlaceInput,
     handleDaysInput,
     handleMustGoInput,
     handleRentedInput,
     getUserInput,
-} from "./modules/userInput.js";
+} from "./../modules/userInput.js";
 
 const $form = document.querySelector("form");
 const $input_place = document.querySelector("#place");
@@ -49,7 +49,7 @@ const merge_sentence = (userInput) => {
 };
 
 // submit
-$form.addEventListener("submit", (e) => {
+$form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const userInput = getUserInput();
@@ -72,11 +72,12 @@ $form.addEventListener("submit", (e) => {
     $input_mustgo.value = null;
 
     let request_sentence_form = merge_sentence(userInput);
+    console.log(request_sentence_form);
     sendSentence(request_sentence_form);
     try {
-        const result = await apiPost();
-        if (result) {
-            printAnswer(result);
+        const schedule = await apiPost();
+        if (schedule) {
+            printAnswer(schedule);
         } else {
             console.log("API 요청 실패");
         }

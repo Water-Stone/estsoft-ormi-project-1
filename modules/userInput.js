@@ -1,5 +1,3 @@
-// modules/userInput.js
-
 let place, days, mustgo, rented;
 
 export const handlePlaceInput = (value) => {
